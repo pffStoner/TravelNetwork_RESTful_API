@@ -94,6 +94,14 @@ exports.fetchEvents =  (req, res, next) => {
     afterDate = req.query.afterDate;
     beforeDate = req.query.beforeDate;
     sortOption = req.query.sort;
+
+    destination = JSON.parse(req.query.location);
+    // location = {
+    //     lat: 42.1354079,
+    //     lng: 24.74529039999993
+    //     };
+    // location = {lat: 42.5007907, lng: 24.18596260000004};
+  console.log(destination);
   
     var sort = {};
     if(sortOption === 'name'){
@@ -103,10 +111,18 @@ exports.fetchEvents =  (req, res, next) => {
     }
     
     Event.find({
-        startDate: {
-            $gte: (afterDate),
-            $lt: (beforeDate)
+        $or:[  {
+            startDate: {
+                $gte: (afterDate),
+                $lt: (beforeDate)
+            }
+        },
+        {
+            "map.destination":destination
         }
+    ]
+      
+
     })
    .sort(sort)
     .then((document) => {
